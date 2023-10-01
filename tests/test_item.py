@@ -1,3 +1,5 @@
+import pytest
+
 from src.item import Item
 
 item1 = Item('Smartphone', 1000, 5)
@@ -21,8 +23,8 @@ def test_apply_discount():
 def test_instantiate_from_csv():
     Item.instantiate_from_csv('src/items.csv')
     assert len(Item.all) == 5
-    item1 = Item.all[0]
-    assert item1.name == 'Смартфон'
+    item = Item.all[0]
+    assert item.name == 'Смартфон'
 
 
 def test_string_to_number():
@@ -37,3 +39,10 @@ def test___str__():
 
 def test___repr__():
     assert repr(item3) == "Item('Смартфон', 10000, 20)"
+
+
+def test___add__():
+    assert item1 + item2 == 15
+    with pytest.raises(TypeError) as excinfo:
+        item1 + 3
+    assert str(excinfo.value) == 'Both objects must be instances of Items or it`s subclasses'
