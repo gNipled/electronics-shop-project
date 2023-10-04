@@ -1,4 +1,6 @@
 import csv
+import os
+from src.Exceptions import InstantiateCSVError
 
 
 class Item:
@@ -59,10 +61,14 @@ class Item:
             self.__name = value
             
     @classmethod
-    def instantiate_from_csv(cls, file_name):
+    def instantiate_from_csv(cls, file_name=(os.path.join('../', 'src', 'items.csv'))):
         Item.all = []
-        with open(f'../{file_name}', 'r', newline='') as file:
+        if not os.path.exists(file_name):
+            raise FileNotFoundError('Отсутствует файл item.csv')
+        with open(f'{file_name}', 'r', newline='') as file:
             for row in csv.DictReader(file):
+                if not {'name', 'price', 'quantity'}.issubset(set(row.keys())):
+                    raise InstantiateCSVError
                 Item(row['name'], row['price'], row['quantity'])
 
     @staticmethod

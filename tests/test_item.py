@@ -1,6 +1,8 @@
 import pytest
+import os.path
 
 from src.item import Item
+from src.Exceptions import InstantiateCSVError
 
 item1 = Item('Smartphone', 1000, 5)
 item2 = Item('Notebook', 2000.0, 10)
@@ -21,10 +23,16 @@ def test_apply_discount():
 
 
 def test_instantiate_from_csv():
-    Item.instantiate_from_csv('src/items.csv')
+    Item.instantiate_from_csv(os.path.join('../', 'src', 'items.csv'))
     assert len(Item.all) == 5
     item = Item.all[0]
     assert item.name == 'Смартфон'
+    with pytest.raises(FileNotFoundError) as excinfo:
+        Item.instantiate_from_csv(os.path.join('../', 'tests', 'imps.csv'))
+    assert str(excinfo.value) == 'Отсутствует файл item.csv'
+    with pytest.raises(InstantiateCSVError) as excinfo:
+        Item.instantiate_from_csv(os.path.join('../', 'tests', 'items.csv'))
+    assert str(excinfo.value) == 'Файл item.csv поврежден'
 
 
 def test_string_to_number():
